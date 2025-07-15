@@ -25,31 +25,6 @@ namespace QuickRentMyRide.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        // Login
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Login(User user)
-        {
-            if (ModelState.IsValid)
-            {
-               
-                if (user.Email == "admin@example.com" && user.Password == "admin123")
-                {
-                    
-                    return RedirectToAction("Index");
-                }
-
-                
-                ModelState.AddModelError(string.Empty, "Invalid login attempt");
-            }
-
-            return View(user);
-        }
-
 
     }
 }
