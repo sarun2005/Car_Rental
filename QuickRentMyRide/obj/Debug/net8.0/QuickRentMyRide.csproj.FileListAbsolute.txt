@@ -338,3 +338,4 @@ Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide\obj\Debug\net8.0\ref
 Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide\obj\Debug\net8.0\QuickRentMyRide.pdb
 Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide\obj\Debug\net8.0\QuickRentMyRide.genruntimeconfig.cache
 Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide\obj\Debug\net8.0\ref\QuickRentMyRide.dll
+Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll

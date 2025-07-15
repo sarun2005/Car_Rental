@@ -26,12 +26,16 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = Z:\Projects\QuickRentMyRide\QuickRentMyRide\QuickRentMyRide
 build_property._RazorSourceGeneratorDebug = 
 
-[Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+[Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Home/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxMb2dpbi5jc2h0bWw=
+[Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [Z:/Projects/QuickRentMyRide/QuickRentMyRide/QuickRentMyRide/Views/Shared/Error.cshtml]

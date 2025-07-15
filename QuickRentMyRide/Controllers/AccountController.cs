@@ -36,7 +36,37 @@ namespace QuickRentMyRide.Controllers
 
 
             // Customer Login (From DB)
+            var existingUser = dbContext.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
 
+            if (existingUser != null)
+            {
+                TempData["LoginSuccess"] = "Welcome Customer!";
+                return RedirectToAction("Dashboard", "Customer");
+            }
+
+            ModelState.AddModelError("", "Invalid Email or Password.");
+            return View(user);
         }
+
+        // Register
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            if (ModelState.IsValid)
+            { 
+                dbContext.Users.Add(user);
+                dbContext.SaveChanges();
+
+                TempData["RegisterSuccess"] = "Account created successfully! Please login.";
+                return RedirectToAction("Login");
+            }
+            return View(user);
+        }  
     }
 }
