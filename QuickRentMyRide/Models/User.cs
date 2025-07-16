@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
 
 namespace QuickRentMyRide.Models
 {
@@ -17,5 +19,10 @@ namespace QuickRentMyRide.Models
 
 
         public string Role { get; set; }
+
+        [NotMapped]
+        public Claim SomeClaim { get; set; }
+
+        
     }
 }

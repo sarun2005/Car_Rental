@@ -1,14 +1,39 @@
 ﻿@using Microsoft.AspNetCore.Authentication.Cookies;
 @using Microsoft.AspNetCore.Authentication;
 
+<ul class="navbar-nav">
 
-@if (User.Identity.IsAuthenticated)
-{
-    <div class="d-flex gap-2">
-        <p>Hello, @User.Identity.Name</p>
-        <form asp-controller="Account" asp-action="signout" method="post">
-            <button type="submit" class="btn btn-danger"> Signout </button>
+    @if (User.Identity.IsAuthenticated)
+    {
+       <li class="nav-item d-flex align-items-center px-2">
+            <p>Hello, @User.Identity.Name</p>
+       </li>
 
-        </form>
-    </div>
-}
+       <li class="nav-item">
+            <form asp-controller="Account" asp-action="signOut" method="post">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Sign Out</button>
+            </form>
+       </li>
+        
+    }
+    else
+    {
+
+        @* Right side Login/SignUp menu *@
+        <li class="nav-item d-flex align-items-center px-1">
+            <i class="bi bi-person-circle fs-5 text-muted"></i>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+        </li>
+
+        <li class="nav-item d-flex align-items-center">
+            <span class="text-muted">|</span>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
+        </li>
+    }
+</ul>

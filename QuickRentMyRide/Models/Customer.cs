@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
 
 namespace QuickRentMyRide.Models
 {
@@ -26,6 +28,9 @@ namespace QuickRentMyRide.Models
 
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+
+        [NotMapped]
+        public Claim SomeClaim { get; set; }
 
     }
 }

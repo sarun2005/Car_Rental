@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuickRentMyRide.Data;
 
 namespace QuickRentMyRide.Controllers
@@ -11,7 +12,9 @@ namespace QuickRentMyRide.Controllers
         {
             this.dbContext = dbContext;
         }
-        public IActionResult Dashboard()
+
+        [Authorize]
+        public IActionResult Index()
         {
             return View();
         }

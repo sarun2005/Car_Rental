@@ -8,12 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
-
 // Database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 
 // Add Authentication + Cookie + Google
@@ -33,7 +30,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-
 var app = builder.Build();
 
 // Middleware pipeline
@@ -48,7 +44,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ✅ Important: Add Authentication & Authorization middleware
+// Important: Add Authentication & Authorization middleware
 app.UseAuthentication(); // <-- MUST come before UseAuthorization
 app.UseAuthorization();
 

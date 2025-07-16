@@ -21,14 +21,18 @@ namespace QuickRentMyRide.Controllers
         [HttpGet]
         public async Task LoginWithGoogle()
         {
-            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
+            var props = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("GoogleResponse")
-            });
-           
+                RedirectUri = Url.Action("GoogleResponse"),
+                Items = { { "prompt", "select_account" } } //Force choose account
+            };
+
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, props);
+
+
         }
 
-        // ✅ Google Login Callback
+        // Google Login Callback
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -54,7 +58,7 @@ namespace QuickRentMyRide.Controllers
            
 
 
-            // ✅ Create claims and Sign in
+            // Create claims and Sign in
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, nameClaim?.Value ?? email),
@@ -81,14 +85,11 @@ namespace QuickRentMyRide.Controllers
         [HttpPost("signout")]
         public async Task<IActionResult> signOut()
         {
+            // Clear the local cookie (this handles both Google and Manual login)
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
             return RedirectToAction("Index", "Home");
         }
-
-
-
-
-
 
 
 
@@ -100,7 +101,7 @@ namespace QuickRentMyRide.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(User user)
+        public async Task<IActionResult> Login(User user)
         {
             if (!ModelState.IsValid)
                 return View(user);
@@ -108,8 +109,22 @@ namespace QuickRentMyRide.Controllers
             // Admin Login Check
             if (user.Email == "Admin@gmail.com" && user.Password == "Admin@123")
             {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, "Admin"),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+
+                // Identity & Principal creation
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                // Sign in the user
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                 TempData["LoginSuccess"] = "Welcome Admin!";
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Index", "Admin");
             }
 
             // Customer Login

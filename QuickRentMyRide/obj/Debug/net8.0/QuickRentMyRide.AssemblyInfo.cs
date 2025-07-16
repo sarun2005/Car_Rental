@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuickRentMyRide")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c2b3853b9cb0d653c78e45700abe0caf5b465b7d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfce6977c6c15e9753ed5d2f480c241dd5688511")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuickRentMyRide")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuickRentMyRide")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
