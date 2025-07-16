@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc;
 using QuickRentMyRide.Data;
 using QuickRentMyRide.Models;
+using System.Security.Claims;
 
 namespace QuickRentMyRide.Controllers
 {
@@ -8,13 +12,87 @@ namespace QuickRentMyRide.Controllers
     {
         private readonly ApplicationDbContext dbContext;
 
-        public AccountController (ApplicationDbContext dbContext)
+        public AccountController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
+        //Trigger Google Login
+        [HttpGet]
+        public async Task LoginWithGoogle()
+        {
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleResponse")
+            });
+           
+        }
 
-        // Login
+        // ✅ Google Login Callback
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                TempData["LoginError"] = "Google login failed.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Get Google user details
+            var emailClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            var nameClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+            if (emailClaim == null)
+            {
+                TempData["LoginError"] = "Google login failed: Email not found.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            string email = emailClaim.Value.ToLower();
+
+           
+
+
+            // ✅ Create claims and Sign in
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, nameClaim?.Value ?? email),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, email)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+
+            TempData["LoginSuccess"] = "Welcome back!";
+            return RedirectToAction("Index", "Customer");
+        }
+
+
+
+
+
+        //Sign Out
+        [HttpPost("signout")]
+        public async Task<IActionResult> signOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+
+
+
+
+
+
+
+        //Login
         [HttpGet]
         public IActionResult Login()
         {
@@ -27,21 +105,21 @@ namespace QuickRentMyRide.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
-            // Admin Hardcoded Login Check
-            if (user.Email == "Admin@gmail.com" &&  user.Password =="Admin@123")
+            // Admin Login Check
+            if (user.Email == "Admin@gmail.com" && user.Password == "Admin@123")
             {
-                TempData["Login Success"] = "Welcom Admin!";
+                TempData["LoginSuccess"] = "Welcome Admin!";
                 return RedirectToAction("Dashboard", "Admin");
             }
 
-
-            // Customer Login (From DB)
-            var existingUser = dbContext.Users.FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
+            // Customer Login
+            var existingUser = dbContext.Users
+                .FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
 
             if (existingUser != null)
             {
                 TempData["LoginSuccess"] = "Welcome Customer!";
-                return RedirectToAction("Dashboard", "Customer");
+                return RedirectToAction("Index", "Customer");
             }
 
             ModelState.AddModelError("", "Invalid Email or Password.");
@@ -56,17 +134,25 @@ namespace QuickRentMyRide.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(User user)
+        public IActionResult Register(Customer customer)
         {
+            if (dbContext.Users.Any(u => u.Email.ToLower() == customer.Email.ToLower()))
+            {
+                ModelState.AddModelError("Email", "This email is already registered. Please login.");
+                return View(customer);
+            }
+
             if (ModelState.IsValid)
-            { 
-                dbContext.Users.Add(user);
+            {
+                dbContext.Customers.Add(customer);
                 dbContext.SaveChanges();
 
                 TempData["RegisterSuccess"] = "Account created successfully! Please login.";
                 return RedirectToAction("Login");
             }
-            return View(user);
-        }  
+
+            return View(customer);
+        }
+
     }
 }

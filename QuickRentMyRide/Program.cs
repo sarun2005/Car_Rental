@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using QuickRentMyRide.Data;
 
@@ -7,24 +8,31 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
 // Database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ Add Authentication + Cookie + Google
+
+
+// Add Authentication + Cookie + Google
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = "Google";
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
-.AddCookie() // Required to manage session/cookies after login
+.AddCookie()
 
-.AddGoogle("Google", options =>
+.AddGoogle(options =>
 {
-    options.ClientId = "985952312591-48a7qt5okot23utdfteugs6vrj37d0bp.apps.googleusercontent.com";
-    options.ClientSecret = "YOUR_CLIENT_SECRET"; // Replace with actual secret
-    options.CallbackPath = "/signin-google"; // Default
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
 });
+
+
 
 var app = builder.Build();
 
