@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj": {}
+    "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\QuickRentMyRide.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj": {
+    "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\QuickRentMyRide.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
+        "projectUniqueName": "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\QuickRentMyRide.csproj",
         "projectName": "QuickRentMyRide",
-        "projectPath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
+        "projectPath": "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\QuickRentMyRide.csproj",
         "packagesPath": "C:\\Users\\sarun\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\obj\\",
+        "outputPath": "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

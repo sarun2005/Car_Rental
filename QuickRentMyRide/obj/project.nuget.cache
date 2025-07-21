@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vn1Mbg5j3k0=",
+  "dgSpecHash": "rGmy2xMCGCY=",
   "success": true,
-  "projectFilePath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
+  "projectFilePath": "C:\\Users\\sarun\\Music\\New_Car_Project\\QuickRentMyRide\\QuickRentMyRide.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sarun\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\sarun\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
@@ -86,15 +86,5 @@
     "C:\\Users\\sarun\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\sarun\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
-      "projectPath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }
