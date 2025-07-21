@@ -22,6 +22,8 @@ namespace QuickRentMyRide.Models
 
         public string Gender { get; set; }
 
+        public string Conform_Password { get; set; }
+
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string Email { get; set; }

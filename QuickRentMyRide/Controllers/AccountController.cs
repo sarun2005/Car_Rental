@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using QuickRentMyRide.Data;
@@ -17,22 +18,20 @@ namespace QuickRentMyRide.Controllers
             this.dbContext = dbContext;
         }
 
-        //Trigger Google Login
+        //Google Login
         [HttpGet]
         public async Task LoginWithGoogle()
         {
             var props = new AuthenticationProperties
             {
                 RedirectUri = Url.Action("GoogleResponse"),
-                Items = { { "prompt", "select_account" } } //Force choose account
+                Items = { { "prompt", "select_account" } }
             };
 
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, props);
-
-
         }
 
-        // Google Login Callback
+        
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -77,6 +76,60 @@ namespace QuickRentMyRide.Controllers
             return RedirectToAction("Index", "Customer");
         }
 
+
+
+        // Facebook login
+        [HttpGet]
+        public async Task LoginWithFacebook()
+        {
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookResponse"),
+                Items = { { "prompt", "select_account" } } 
+            };
+
+            await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme, props);
+        }
+
+
+        public async Task<IActionResult> FacebookResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                TempData["LoginError"] = "Facebook login failed.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Get Facebook user details
+            var emailClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            var nameClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+            if (emailClaim == null)
+            {
+                TempData["LoginError"] = "Facebook login failed: Email not found.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            string email = emailClaim.Value.ToLower();
+
+            // Create claims and Sign in
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, nameClaim?.Value ?? email),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, email)
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            TempData["LoginSuccess"] = "Welcome back!";
+            return RedirectToAction("Index", "Customer");
+        }
 
 
 
@@ -151,11 +204,20 @@ namespace QuickRentMyRide.Controllers
         [HttpPost]
         public IActionResult Register(Customer customer)
         {
+            // email check
             if (dbContext.Users.Any(u => u.Email.ToLower() == customer.Email.ToLower()))
             {
                 ModelState.AddModelError("Email", "This email is already registered. Please login.");
                 return View(customer);
             }
+
+            // conform password
+            if (customer.Password != customer.Conform_Password)
+            {
+                ModelState.AddModelError("Conform_Password", "Passwords do not match.");
+                return View(customer);
+            }
+
 
             if (ModelState.IsValid)
             {

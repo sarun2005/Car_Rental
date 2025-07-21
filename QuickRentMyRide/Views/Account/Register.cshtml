@@ -25,12 +25,6 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="IC_Number" class="form-label"><i class="bi bi-person-bounding-box"></i> IC </label>
-                <input asp-for="IC_Number" class="form-control" placeholder="Enter your IC number" />
-                <span asp-validation-for="IC_Number" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
                 <label asp-for="Email" class="form-label"><i class="fas fa-envelope me-2"></i>Email</label>
                 <input asp-for="Email" class="form-control" placeholder="Enter your email" />
                 <span asp-validation-for="Email" class="text-danger small"></span>
@@ -41,6 +35,13 @@
                 <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
+
+            <div class="mb-3">
+                <label asp-for="Conform_Password" class="form-label"><i class="fas fa-lock me-2"></i>Conform Password</label>
+                <input asp-for="Password" type="Conform_Password" class="form-control" placeholder="Enter your password" />
+                <span asp-validation-for="Conform_Password" class="text-danger small"></span>
+            </div>
+
 
             <button type="submit" class="btn btn-success w-100 mb-3">Register</button>
         </form>

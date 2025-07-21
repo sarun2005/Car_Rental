@@ -60,6 +60,22 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Authentication.Facebook/8.0.18": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.AspNetCore.Authentication.Facebook.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Authentication.Facebook.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Microsoft.AspNetCore.Authentication.Google/8.0.18": {
         "type": "package",
         "compile": {
@@ -1675,6 +1691,21 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "Microsoft.AspNetCore.Authentication.Facebook/8.0.18": {
+      "sha512": "kdnn11BcS0bjB+5JbP9u4QFQma+J4d86SN9YkEcaLAZmO328aQJak6feOY9auTm0GJjLUlBFHcSpZkSwW5amBA==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.authentication.facebook/8.0.18",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net8.0/Microsoft.AspNetCore.Authentication.Facebook.dll",
+        "lib/net8.0/Microsoft.AspNetCore.Authentication.Facebook.xml",
+        "microsoft.aspnetcore.authentication.facebook.8.0.18.nupkg.sha512",
+        "microsoft.aspnetcore.authentication.facebook.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Authentication.Google/8.0.18": {
@@ -4747,6 +4778,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Microsoft.AspNetCore.Authentication.Facebook >= 8.0.18",
       "Microsoft.AspNetCore.Authentication.Google >= 8.0.18",
       "Microsoft.EntityFrameworkCore >= 9.0.7",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.7",
@@ -4754,19 +4786,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\UT010615\\.nuget\\packages\\": {}
+    "C:\\Users\\sarun\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "Z:\\Projects\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
+      "projectUniqueName": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
       "projectName": "QuickRentMyRide",
-      "projectPath": "Z:\\Projects\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
-      "packagesPath": "C:\\Users\\UT010615\\.nuget\\packages\\",
-      "outputPath": "Z:\\Projects\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide\\obj\\",
+      "projectPath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\QuickRentMyRide.csproj",
+      "packagesPath": "C:\\Users\\sarun\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sarun\\Documents\\QuickRentMyRide\\QuickRentMyRide\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\UT010615\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\sarun\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4774,7 +4811,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4792,12 +4828,17 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "Microsoft.AspNetCore.Authentication.Facebook": {
+            "target": "Package",
+            "version": "[8.0.18, )"
+          },
           "Microsoft.AspNetCore.Authentication.Google": {
             "target": "Package",
             "version": "[8.0.18, )"
@@ -4836,8 +4877,16 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json."
+    }
+  ]
 }
