@@ -1,7 +1,10 @@
-﻿namespace QuickRentMyRide.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace QuickRentMyRide.Models
 {
     public class Admin
     {
+        [Key]
         public int AdminID { get; set; }
 
         public string Full_Name { get; set; }

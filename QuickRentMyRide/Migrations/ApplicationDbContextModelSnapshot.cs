@@ -51,14 +51,15 @@ namespace QuickRentMyRide.Migrations
                     b.Property<string>("License_Photo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Phone_Number")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserID")
+                        .HasColumnType("int");
+
                     b.HasKey("CustomerID");
+
+                    b.HasIndex("UserID");
 
                     b.ToTable("Customers");
                 });
@@ -85,6 +86,15 @@ namespace QuickRentMyRide.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("QuickRentMyRide.Models.Customer", b =>
+                {
+                    b.HasOne("QuickRentMyRide.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

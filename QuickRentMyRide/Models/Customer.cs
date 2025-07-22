@@ -6,6 +6,7 @@ namespace QuickRentMyRide.Models
 {
     public class Customer
     {
+        [Key]
         public int CustomerID { get; set; }
 
         public string Full_Name { get; set; }
@@ -22,17 +23,16 @@ namespace QuickRentMyRide.Models
 
         public string Gender { get; set; }
 
-        public string Conform_Password { get; set; }
-
-        [Required(ErrorMessage = "Email is required")]
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
 
-        [NotMapped]
-        public Claim SomeClaim { get; set; }
+
+        // Foreign key to User table
+        public int? UserID { get; set; }
+        [ForeignKey("UserID")]
+        public virtual User User { get; set; }
 
     }
 }

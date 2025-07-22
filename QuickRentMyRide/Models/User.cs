@@ -9,7 +9,6 @@ namespace QuickRentMyRide.Models
         [Key]
         public int UserID { get; set; }
 
-
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string Email { get; set; }
@@ -18,9 +17,6 @@ namespace QuickRentMyRide.Models
         public string Password { get; set; }
 
         public string Role { get; set; }
-
-        [NotMapped]
-        public Claim SomeClaim { get; set; }
 
         
     }

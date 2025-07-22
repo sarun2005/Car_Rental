@@ -4,232 +4,295 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using QuickRentMyRide.Data;
+using QuickRentMyRide.DTOs;
 using QuickRentMyRide.Models;
+using QuickRentMyRide.Services.Interfaces;
 using System.Security.Claims;
+using BCrypt.Net;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace QuickRentMyRide.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly IOtpService otpService;
+        private readonly IEmailService emailService;
 
-        public AccountController(ApplicationDbContext dbContext)
+        public AccountController(ApplicationDbContext dbContext, IOtpService otpService, IEmailService emailService)
         {
             this.dbContext = dbContext;
+            this.otpService = otpService;
+            this.emailService = emailService;
         }
 
-        //Google Login
-        [HttpGet]
-        public async Task LoginWithGoogle()
-        {
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("GoogleResponse"),
-                Items = { { "prompt", "select_account" } }
-            };
-
-            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, props);
-        }
-
-        
-        public async Task<IActionResult> GoogleResponse()
-        {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            if (!result.Succeeded)
-            {
-                TempData["LoginError"] = "Google login failed.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Get Google user details
-            var emailClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-            var nameClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-
-            if (emailClaim == null)
-            {
-                TempData["LoginError"] = "Google login failed: Email not found.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            string email = emailClaim.Value.ToLower();
-
-           
-
-
-            // Create claims and Sign in
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, nameClaim?.Value ?? email),
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.NameIdentifier, email)
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-
-            TempData["LoginSuccess"] = "Welcome back!";
-            return RedirectToAction("Index", "Customer");
-        }
-
-
-
-        // Facebook login
-        [HttpGet]
-        public async Task LoginWithFacebook()
-        {
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("FacebookResponse"),
-                Items = { { "prompt", "select_account" } } 
-            };
-
-            await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme, props);
-        }
-
-
-        public async Task<IActionResult> FacebookResponse()
-        {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            if (!result.Succeeded)
-            {
-                TempData["LoginError"] = "Facebook login failed.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Get Facebook user details
-            var emailClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-            var nameClaim = result.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-
-            if (emailClaim == null)
-            {
-                TempData["LoginError"] = "Facebook login failed: Email not found.";
-                return RedirectToAction("Login", "Account");
-            }
-
-            string email = emailClaim.Value.ToLower();
-
-            // Create claims and Sign in
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, nameClaim?.Value ?? email),
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.NameIdentifier, email)
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            TempData["LoginSuccess"] = "Welcome back!";
-            return RedirectToAction("Index", "Customer");
-        }
-
-
-
-
-        //Sign Out
-        [HttpPost("signout")]
-        public async Task<IActionResult> signOut()
-        {
-            // Clear the local cookie (this handles both Google and Manual login)
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return RedirectToAction("Index", "Home");
-        }
-
-
-
-        //Login
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(User user)
-        {
-            if (!ModelState.IsValid)
-                return View(user);
-
-            // Admin Login Check new
-            if (user.Email == "Admin@gmail.com" && user.Password == "Admin@123")
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, "Admin"),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
-
-                // Identity & Principal creation
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(identity);
-
-                // Sign in the user
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-                TempData["LoginSuccess"] = "Welcome Admin!";
-                return RedirectToAction("Index", "Admin");
-            }
-
-            // Customer Login
-            var existingUser = dbContext.Users
-                .FirstOrDefault(u => u.Email == user.Email && u.Password == user.Password);
-
-            if (existingUser != null)
-            {
-                TempData["LoginSuccess"] = "Welcome Customer!";
-                return RedirectToAction("Index", "Customer");
-            }
-
-            ModelState.AddModelError("", "Invalid Email or Password.");
-            return View(user);
-        }
-
-        // Register
+        // ============ Register GET ===========
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        // ============ Register POST with OTP send ===========
         [HttpPost]
-        public IActionResult Register(Customer customer)
+        public async Task<IActionResult> Register(RegisterDto registerDto)
         {
-            // email check
-            if (dbContext.Users.Any(u => u.Email.ToLower() == customer.Email.ToLower()))
+            if (!ModelState.IsValid)
+                return View(registerDto);
+
+            // Check email duplicate
+            if (dbContext.Users.Any(u => u.Email.ToLower() == registerDto.Email.ToLower()))
             {
-                ModelState.AddModelError("Email", "This email is already registered. Please login.");
-                return View(customer);
+                ModelState.AddModelError("Email", "This email is already registered.");
+                return View(registerDto);
             }
 
-            // conform password
-            if (customer.Password != customer.Conform_Password)
-            {
-                ModelState.AddModelError("Conform_Password", "Passwords do not match.");
-                return View(customer);
-            }
+            // Generate OTP and save in session
+            var otp = otpService.GenerateOtp();
+            HttpContext.Session.SetString("OTP", otp);
+            HttpContext.Session.SetString("Email", registerDto.Email);
+            HttpContext.Session.SetString("FullName", registerDto.Full_Name);
+            HttpContext.Session.SetString("Password", registerDto.Password);
 
+            string emailBody = $"Your OTP code is: <b>{otp}</b>";
+            await emailService.SendEmailAsync(registerDto.Email, "OTP Verification", emailBody);
 
-            if (ModelState.IsValid)
+            return RedirectToAction("VerifyOtp");
+        }
+
+        // ============ Verify OTP GET ===========
+        [HttpGet]
+        public IActionResult VerifyOtp()
+        {
+            return View();
+        }
+
+        // ============ Verify OTP POST ===========
+        [HttpPost]
+        public IActionResult VerifyOtp(string inputOtp)
+        {
+            var actualOtp = HttpContext.Session.GetString("OTP");
+            var email = HttpContext.Session.GetString("Email");
+            var fullName = HttpContext.Session.GetString("FullName");
+            var password = HttpContext.Session.GetString("Password");
+
+            if (inputOtp == actualOtp)
             {
+                // Hash password before saving
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+                var user = new User
+                {
+                    Email = email,
+                    Password = hashedPassword,
+                    Role = "Customer"
+                };
+                dbContext.Users.Add(user);
+                dbContext.SaveChanges();
+
+                var customer = new Customer
+                {
+                    Email = email,
+                    Full_Name = fullName,
+                    UserID = user.UserID
+                };
                 dbContext.Customers.Add(customer);
                 dbContext.SaveChanges();
 
-                TempData["RegisterSuccess"] = "Account created successfully! Please login.";
+                HttpContext.Session.Clear();
+
+                TempData["RegisterSuccess"] = "Registration successful! Please login.";
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid OTP. Please try again.");
+                return View();
+            }
+        }
+
+        // ============ Login GET ===========
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // ============ Login POST ===========
+        [HttpPost]
+        public async Task<IActionResult> Login(User user)
+        {
+            if (!ModelState.IsValid)
+                return View(user);
+
+            // Admin login (hardcoded)
+            if (user.Email.ToLower() == "admin@gmail.com" && user.Password == "Admin@123")
+            {
+                var adminClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, "Admin"),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+
+                var adminIdentity = new ClaimsIdentity(adminClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var adminPrincipal = new ClaimsPrincipal(adminIdentity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, adminPrincipal);
+                TempData["LoginSuccess"] = "Welcome Admin!";
+                return RedirectToAction("Index", "Admin");
+            }
+
+            // Find user by email
+            var existingUser = dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == user.Email.ToLower());
+            if (existingUser != null)
+            {
+                // Verify hashed password
+                bool passwordValid = BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password);
+                if (passwordValid)
+                {
+                    var customerClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, existingUser.Email),
+                        new Claim(ClaimTypes.Email, existingUser.Email),
+                        new Claim(ClaimTypes.Role, "Customer")
+                    };
+
+                    var customerIdentity = new ClaimsIdentity(customerClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var customerPrincipal = new ClaimsPrincipal(customerIdentity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, customerPrincipal);
+                    TempData["LoginSuccess"] = "Welcome Customer!";
+                    return RedirectToAction("Index", "Customer");
+                }
+            }
+
+            ModelState.AddModelError("", "Invalid Email or Password.");
+            return View(user);
+        }
+
+        // ============ Logout POST ===========
+        [HttpPost("signout")]
+        public async Task<IActionResult> signOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ============ Google Login ===========
+        [HttpGet]
+        public async Task LoginWithGoogle()
+        {
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleResponse")
+            };
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, props);
+        }
+
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!result.Succeeded)
+            {
+                TempData["LoginError"] = "Google login failed.";
                 return RedirectToAction("Login");
             }
 
-            return View(customer);
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["LoginError"] = "Google login failed: Email not found.";
+                return RedirectToAction("Login");
+            }
+
+            // Optionally: check if user exists in DB; if not, create new user
+            var user = dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    Password = "", // No password for social login or set random
+                    Role = "Customer"
+                };
+                dbContext.Users.Add(user);
+                dbContext.SaveChanges();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, name ?? email),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, "Customer")
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            TempData["LoginSuccess"] = "Logged in with Google!";
+            return RedirectToAction("Index", "Customer");
         }
 
+        // ============ Facebook Login ===========
+        [HttpGet]
+        public async Task LoginWithFacebook()
+        {
+            var props = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookResponse")
+            };
+            await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme, props);
+        }
+
+        public async Task<IActionResult> FacebookResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!result.Succeeded)
+            {
+                TempData["LoginError"] = "Facebook login failed.";
+                return RedirectToAction("Login");
+            }
+
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["LoginError"] = "Facebook login failed: Email not found.";
+                return RedirectToAction("Login");
+            }
+
+            // Optionally: check if user exists in DB; if not, create new user
+            var user = dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    Password = "", // No password for social login or set random
+                    Role = "Customer"
+                };
+                dbContext.Users.Add(user);
+                dbContext.SaveChanges();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, name ?? email),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, "Customer")
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            TempData["LoginSuccess"] = "Logged in with Facebook!";
+            return RedirectToAction("Index", "Customer");
+        }
     }
 }

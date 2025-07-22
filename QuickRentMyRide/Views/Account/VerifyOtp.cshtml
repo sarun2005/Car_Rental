@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Verify OTP";
+}
+
+<h2>Verify OTP</h2>
+
+<form asp-action="VerifyOtp" method="post">
+    <div class="form-group">
+        <label>Enter the OTP sent to your email</label>
+        <input name="inputOtp" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Verify</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="text-danger">
+        @Html.ValidationSummary()
+    </div>
+}
