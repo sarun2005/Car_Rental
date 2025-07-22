@@ -159,7 +159,7 @@ namespace QuickRentMyRide.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
-            // Admin Login Check
+            // Admin Login Check new
             if (user.Email == "Admin@gmail.com" && user.Password == "Admin@123")
             {
                 var claims = new List<Claim>
