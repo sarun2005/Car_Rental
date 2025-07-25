@@ -15,7 +15,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// ✅ Add Session services
+// Add Session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -61,7 +61,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession(); // ✅ Must be before authentication
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 

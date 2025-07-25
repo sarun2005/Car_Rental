@@ -2,7 +2,7 @@
   "Files": [
     {
       "Id": "Z:\\New folder\\22-07-2025\\Car_Rental\\QuickRentMyRide\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\QuickRentMyRide.bundle.scp.css",
-      "PackagePath": "staticwebassets\\QuickRentMyRide.bundle.scp.css"
+      "PackagePath": "staticwebassets\\QuickRentMyRide.g9fdvx6zil.bundle.scp.css"
     },
     {
       "Id": "Z:\\New folder\\22-07-2025\\Car_Rental\\QuickRentMyRide\\wwwroot\\css\\site.css",
@@ -247,6 +247,10 @@
     {
       "Id": "Z:\\New folder\\22-07-2025\\Car_Rental\\QuickRentMyRide\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.QuickRentMyRide.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.QuickRentMyRide.Microsoft.AspNetCore.StaticWebAssets.props",

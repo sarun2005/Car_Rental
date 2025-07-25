@@ -1215,3 +1215,7 @@ Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\refint\Quic
 Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\QuickRentMyRide.pdb
 Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\QuickRentMyRide.genruntimeconfig.cache
 Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\ref\QuickRentMyRide.dll
+Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\bin\Debug\net8.0\QuickRentMyRide.staticwebassets.endpoints.json
+Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\staticwebassets\msbuild.QuickRentMyRide.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+Z:\New folder\22-07-2025\Car_Rental\QuickRentMyRide\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
